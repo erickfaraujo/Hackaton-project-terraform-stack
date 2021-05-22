@@ -17,7 +17,7 @@ variable "project" {
 
 data "aws_vpc" "vpc" {
   tags = {
-    Name = "${var.project}"
+    Name = "${var.project}-${terraform.workspace}"
   }
 }
 
@@ -96,6 +96,6 @@ resource "aws_instance" "web" {
   }
 
   tags = {
-    Name = "${format("nginx-hackaton-%03d", count.index + 1)}"
+    Name = "${format("nginx-hackaton-%03d", count.index + 1)}-${terraform.workspace}"
   }
 }
