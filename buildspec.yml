@@ -12,6 +12,7 @@ phases:
       - REPOSITORY_URI="$ECR_ADDRESS"
       - mkdir .aws && aws s3 cp s3://hackathon-fiap-76aoj-336794/instance-need/.aws/credentials .aws/ && aws s3 cp s3://hackathon-fiap-76aoj-336794/instance-need/.aws/config .aws/
       - mkdir .ssh && aws s3 cp s3://hackathon-fiap-76aoj-336794/instance-need/.ssh/fiap-lab.pem .ssh/ 
+      - WORKSPACE="${terraform.workspace}"
   pre_build:
     commands:
       - login=$(aws ecr get-login --region=us-east-1)
@@ -19,7 +20,7 @@ phases:
       - echo $login | bash      
   build:
     commands:
-      - dockerterraform="docker run --rm -w /app  -v $PWD:/app -v $PWD/.aws:/root/.aws -v $PWD/.ssh:/root/.ssh -e PROJ_NAME=${terraform.workspace} $terraformImage"
+      - dockerterraform="docker run --rm -w /app  -v $PWD:/app -v $PWD/.aws:/root/.aws -v $PWD/.ssh:/root/.ssh -e PROJ_NAME=$WORKSPACE $terraformImage"
       - $dockerterraform init 
       - $dockerterraform workspace select ${terraform.workspace} || $dockerterraform workspace new ${terraform.workspace}
       - $dockerterraform destroy -var ECR_REGISTRY="${REPOSITORY_URI}" -auto-approve
