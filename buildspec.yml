@@ -19,9 +19,9 @@ phases:
       - echo $login | bash      
   build:
     commands:
-      - dockerterraform="docker run --rm -w /app  -v $PWD:/app -v $PWD/.aws:/root/.aws -v $PWD/.ssh:/root/.ssh -e PROJ_NAME=$PROJ_NAME $terraformImage"
+      - dockerterraform="docker run --rm -w /app  -v $PWD:/app -v $PWD/.aws:/root/.aws -v $PWD/.ssh:/root/.ssh -e PROJ_NAME=${terraform.workspace} $terraformImage"
       - $dockerterraform init 
-      - $dockerterraform workspace select $STAGE || $dockerterraform workspace new $STAGE
+      - $dockerterraform workspace select ${terraform.workspace} || $dockerterraform workspace new ${terraform.workspace}
       - $dockerterraform destroy -var ECR_REGISTRY="${REPOSITORY_URI}" -auto-approve
       - $dockerterraform plan -var ECR_REGISTRY="${REPOSITORY_URI}" -out plan.out
       - $dockerterraform apply -var ECR_REGISTRY="${REPOSITORY_URI}" -auto-approve
